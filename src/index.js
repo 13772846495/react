@@ -810,13 +810,13 @@ import './index.css';
 
 
 // 错误边界（无法捕捉事件处理器内部的错误）
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      hasError: false
-    };
-  }
+// class ErrorBoundary extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       hasError: false
+//     };
+//   }
 
   static getDerivedStateFromError(error) {
     // 更新 state 使下一次渲染能够显示降级后的 UI
