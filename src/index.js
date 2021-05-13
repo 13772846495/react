@@ -1016,23 +1016,131 @@ import './index.css';
 // )
 
 
-function CustomTextInput(props) {
+// function CustomTextInput(props) {
+//   return (
+//     <div>
+//       <input ref={props.inputRef} />
+//     </div>
+//   );
+// }
+
+// class Parent extends React.Component {
+//   render() {
+//     return (
+//       <CustomTextInput inputRef={el => this.inputElement = el} />
+//     );
+//   }
+// }
+
+// ReactDOM.render(
+//   <Parent />,
+//   document.getElementById('root')
+// )
+
+
+// Fragments
+
+// 如果在render()中使用了父div,则生成的HTML无效
+// class Table extends React.Component {
+//   render() {
+//     return (
+//       <table>
+//         <tr>
+//           <Columns />
+//         </tr>
+//       </table>
+//     );
+//   }
+// }
+
+// class Columns extends React.Component {
+//   render() {
+//     return (
+//       <div>
+//         <td>Hello</td>
+//         <td>World</td>
+//       </div>
+//     );
+//   }
+// }
+
+// ReactDOM.render(
+//   <Table />,
+//   document.getElementById('root')
+// )
+
+// class Table extends React.Component {
+//   render() {
+//     return (
+//       <table>
+//         <tr>
+//           <Columns />
+//         </tr>
+//       </table>
+//     );
+//   }
+// }
+
+// class Columns extends React.Component {
+//   render() {
+//     return (
+//       // 也可使用空标签<>代替<React.Fragment>, 但是<>不支持key或属性。
+//       <React.Fragment>
+//         <td>Hello</td>
+//         <td>World</td>
+//       </React.Fragment>
+//     );
+//   }
+// }
+
+// ReactDOM.render(
+//   <Table />,
+//   document.getElementById('root')
+// )
+
+// 带key的Fragments
+function Glossary(props) {
   return (
-    <div>
-      <input ref={props.inputRef} />
-    </div>
+    <dl>
+      {props.items.map(item => (
+        // 没有`key`, React会发出一个关键警告
+        <React.Fragment key={item.id}>
+          <dt>{item.term}</dt>
+          <dd>{item.description}</dd>
+        </React.Fragment>
+      ))}
+    </dl>
   );
 }
 
-class Parent extends React.Component {
+class Item extends React.Component {
   render() {
+    let items = [{
+      id: 0,
+      term: 0,
+      description: 'This is zero!'
+    },{
+      id: 1,
+      term: 1,
+      description: 'This is one!'
+    },{
+      id: 2,
+      term: 2,
+      description: 'This is two!'
+    },{
+      id: 3,
+      term: 3,
+      description: 'This is three!'
+    }];
     return (
-      <CustomTextInput inputRef={el => this.inputElement = el} />
+      <div>
+        <Glossary items={items} />
+      </div>
     );
   }
 }
 
 ReactDOM.render(
-  <Parent />,
+  <Item />,
   document.getElementById('root')
 )
