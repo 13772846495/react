@@ -1133,9 +1133,9 @@ class Item extends React.Component {
       description: 'This is three!'
     }];
     return (
-      <div>
+      <>
         <Glossary items={items} />
-      </div>
+      </>
     );
   }
 }
