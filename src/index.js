@@ -1149,76 +1149,76 @@ import './index.css';
 // 高阶组件
 
 // 假设有一个 CommentList 组件，它订阅外部数据源，用以渲染评论列表
-class CommentList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.state = {
-      // 假设 "DataSource" 是个全局范围内的数据源变量
-      comments: DataSource.getComments()
-    }
-  }
+// class CommentList extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.handleChange = this.handleChange.bind(this);
+//     this.state = {
+//       // 假设 "DataSource" 是个全局范围内的数据源变量
+//       comments: DataSource.getComments()
+//     }
+//   }
 
-  componentDidMount() {
-    // 订阅更改
-    DataSource.addChangeListener(this.handleChange);
-  }
+//   componentDidMount() {
+//     // 订阅更改
+//     DataSource.addChangeListener(this.handleChange);
+//   }
 
-  componentWillUnmount() {
-    // 清除订阅
-    DataSource.removeChangeListener(this.handleChange);
-  }
+//   componentWillUnmount() {
+//     // 清除订阅
+//     DataSource.removeChangeListener(this.handleChange);
+//   }
 
-  handleChange() {
-    // 当数据源更新时，更新组件状态
-    this.setState({
-      comments: DataSource.getComments()
-    })
-  }
+//   handleChange() {
+//     // 当数据源更新时，更新组件状态
+//     this.setState({
+//       comments: DataSource.getComments()
+//     })
+//   }
 
-  render() {
-    return (
-      <div>
-        {this.state.comments.map((comment) => (
-          <Comment comment={comment} key={comment.id} />
-        ))}
-      </div>
-    );
-  }
-}
+//   render() {
+//     return (
+//       <div>
+//         {this.state.comments.map((comment) => (
+//           <Comment comment={comment} key={comment.id} />
+//         ))}
+//       </div>
+//     );
+//   }
+// }
 
-// 编写了一个用于订阅单个博客帖子的组件，该帖子遵循类似的模式
-class BlogPost extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.state = {
-      // 假设 "DataSource" 是个全局范围内的数据源变量
-      blogPost: DataSource.getBlogPost(props.id)
-    }
-  }
+// // 编写了一个用于订阅单个博客帖子的组件，该帖子遵循类似的模式
+// class BlogPost extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.handleChange = this.handleChange.bind(this);
+//     this.state = {
+//       // 假设 "DataSource" 是个全局范围内的数据源变量
+//       blogPost: DataSource.getBlogPost(props.id)
+//     }
+//   }
 
-  componentDidMount() {
-    // 订阅更改
-    DataSource.addChangeListener(this.handleChange);
-  }
+//   componentDidMount() {
+//     // 订阅更改
+//     DataSource.addChangeListener(this.handleChange);
+//   }
 
-  componentWillUnmount() {
-    // 清除订阅
-    DataSource.removeChangeListener(this.handleChange);
-  }
+//   componentWillUnmount() {
+//     // 清除订阅
+//     DataSource.removeChangeListener(this.handleChange);
+//   }
 
-  handleChange() {
-    // 当数据源更新时，更新组件状态
-    this.setState({
-      blogPost: DataSource.getBlogPost(this.props.id)
-    })
-  }
+//   handleChange() {
+//     // 当数据源更新时，更新组件状态
+//     this.setState({
+//       blogPost: DataSource.getBlogPost(this.props.id)
+//     })
+//   }
 
-  render() {
-    return <TextBlock text={this.state.blogPost} />;
-  }
-}
+//   render() {
+//     return <TextBlock text={this.state.blogPost} />;
+//   }
+// }
 
 /**
  * CommentList 和 BlogPost 不同 - 它们在 DataSource 上调用不同的方法，且渲染不同的结果。但它们的大部分实现都是一样的：
@@ -1226,3 +1226,54 @@ class BlogPost extends React.Component {
    · 在侦听器内部，当数据源发生变化时，调用 setState。
    · 在卸载时，删除侦听器。
  */
+
+
+// 与第三方库协同
+function Example() {
+  return (
+    <Chosen onChange={value => console.log(value)}>
+        <option>vanilla</option>
+        <option>chocolate</option>
+        <option>strawberry</option>
+    </Chosen>
+  );
+}
+
+class Chosen extends React.Component {
+  componentDidMount() {
+    this.$el = $(this.el);
+    this.$el.chosen();
+
+    this.handleChange = this.handleChange.bind(this);
+    this.$el.on('change', this.handleChange);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.children !== this.props.children) {
+      this.$el.trigger("chosen:updated");
+    }
+  }
+
+  componentWillUnmount() {
+    this.$el.off('change', this.handleChange);
+    this.$el.chosen('destroy');
+  }
+
+  handleChange(e) {
+    this.props.onChange(e.target.value);
+  }
+  render() {
+    return (
+      <div>
+        <select className="Chosen-select" ref={el => this.el = el}>
+          {this.props.children}
+        </select>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(
+  <Example />,
+  document.getElementById('root')
+)
