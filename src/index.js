@@ -1099,48 +1099,130 @@ import './index.css';
 // )
 
 // 带key的Fragments
-function Glossary(props) {
-  return (
-    <dl>
-      {props.items.map(item => (
-        // 没有`key`, React会发出一个关键警告
-        <React.Fragment key={item.id}>
-          <dt>{item.term}</dt>
-          <dd>{item.description}</dd>
-        </React.Fragment>
-      ))}
-    </dl>
-  );
-}
+// function Glossary(props) {
+//   return (
+//     <dl>
+//       {props.items.map(item => (
+//         // 没有`key`, React会发出一个关键警告
+//         <React.Fragment key={item.id}>
+//           <dt>{item.term}</dt>
+//           <dd>{item.description}</dd>
+//         </React.Fragment>
+//       ))}
+//     </dl>
+//   );
+// }
 
-class Item extends React.Component {
+// class Item extends React.Component {
+//   render() {
+//     let items = [{
+//       id: 0,
+//       term: 0,
+//       description: 'This is zero!'
+//     },{
+//       id: 1,
+//       term: 1,
+//       description: 'This is one!'
+//     },{
+//       id: 2,
+//       term: 2,
+//       description: 'This is two!'
+//     },{
+//       id: 3,
+//       term: 3,
+//       description: 'This is three!'
+//     }];
+//     return (
+//       <>
+//         <Glossary items={items} />
+//       </>
+//     );
+//   }
+// }
+
+// ReactDOM.render(
+//   <Item />,
+//   document.getElementById('root')
+// )
+
+
+// 高阶组件
+
+// 假设有一个 CommentList 组件，它订阅外部数据源，用以渲染评论列表
+class CommentList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = {
+      // 假设 "DataSource" 是个全局范围内的数据源变量
+      comments: DataSource.getComments()
+    }
+  }
+
+  componentDidMount() {
+    // 订阅更改
+    DataSource.addChangeListener(this.handleChange);
+  }
+
+  componentWillUnmount() {
+    // 清除订阅
+    DataSource.removeChangeListener(this.handleChange);
+  }
+
+  handleChange() {
+    // 当数据源更新时，更新组件状态
+    this.setState({
+      comments: DataSource.getComments()
+    })
+  }
+
   render() {
-    let items = [{
-      id: 0,
-      term: 0,
-      description: 'This is zero!'
-    },{
-      id: 1,
-      term: 1,
-      description: 'This is one!'
-    },{
-      id: 2,
-      term: 2,
-      description: 'This is two!'
-    },{
-      id: 3,
-      term: 3,
-      description: 'This is three!'
-    }];
     return (
-      <>
-        <Glossary items={items} />
-      </>
+      <div>
+        {this.state.comments.map((comment) => (
+          <Comment comment={comment} key={comment.id} />
+        ))}
+      </div>
     );
   }
 }
 
-ReactDOM.render(
-  <Item />,
-  document.getElementById('root')
-)
+// 编写了一个用于订阅单个博客帖子的组件，该帖子遵循类似的模式
+class BlogPost extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = {
+      // 假设 "DataSource" 是个全局范围内的数据源变量
+      blogPost: DataSource.getBlogPost(props.id)
+    }
+  }
+
+  componentDidMount() {
+    // 订阅更改
+    DataSource.addChangeListener(this.handleChange);
+  }
+
+  componentWillUnmount() {
+    // 清除订阅
+    DataSource.removeChangeListener(this.handleChange);
+  }
+
+  handleChange() {
+    // 当数据源更新时，更新组件状态
+    this.setState({
+      blogPost: DataSource.getBlogPost(this.props.id)
+    })
+  }
+
+  render() {
+    return <TextBlock text={this.state.blogPost} />;
+  }
+}
+
+/**
+ * CommentList 和 BlogPost 不同 - 它们在 DataSource 上调用不同的方法，且渲染不同的结果。但它们的大部分实现都是一样的：
+   · 在挂载时，向 DataSource 添加一个更改侦听器。
+   · 在侦听器内部，当数据源发生变化时，调用 setState。
+   · 在卸载时，删除侦听器。
+ */
