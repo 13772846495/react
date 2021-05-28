@@ -1229,51 +1229,193 @@ import './index.css';
 
 
 // 与第三方库协同
-function Example() {
-  return (
-    <Chosen onChange={value => console.log(value)}>
-        <option>vanilla</option>
-        <option>chocolate</option>
-        <option>strawberry</option>
-    </Chosen>
-  );
+// function Example() {
+//   return (
+//     <Chosen onChange={value => console.log(value)}>
+//         <option>vanilla</option>
+//         <option>chocolate</option>
+//         <option>strawberry</option>
+//     </Chosen>
+//   );
+// }
+
+// class Chosen extends React.Component {
+//   componentDidMount() {
+//     this.$el = $(this.el);
+//     this.$el.chosen();
+
+//     this.handleChange = this.handleChange.bind(this);
+//     this.$el.on('change', this.handleChange);
+//   }
+
+//   componentDidUpdate(prevProps) {
+//     if (prevProps.children !== this.props.children) {
+//       this.$el.trigger("chosen:updated");
+//     }
+//   }
+
+//   componentWillUnmount() {
+//     this.$el.off('change', this.handleChange);
+//     this.$el.chosen('destroy');
+//   }
+
+//   handleChange(e) {
+//     this.props.onChange(e.target.value);
+//   }
+//   render() {
+//     return (
+//       <div>
+//         <select className="Chosen-select" ref={el => this.el = el}>
+//           {this.props.children}
+//         </select>
+//       </div>
+//     );
+//   }
+// }
+
+// ReactDOM.render(
+//   <Example />,
+//   document.getElementById('root')
+// )
+
+
+// 深入JSX
+// const MyComponents = {
+//   DatePicker: function DatePicker(props) {
+//     return <div>Imagine a {props.color} datepicker here.</div>;
+//   }
+// }
+
+// function BlueDatePicker() {
+//   return <MyComponents.DatePicker color='blue' />
+// }
+
+// ReactDOM.render(
+//   <BlueDatePicker />,
+//   document.getElementById('root')
+// )
+
+// function App() {
+//   return (
+//     <NumberDescriber number="2" />
+//   );
+// }
+
+// function NumberDescriber(props) {
+//   let description;
+//   if (props.number % 2 === 0) {
+//     description = <strong>even</strong>;
+//   } else {
+//     description = <i>odd</i>;
+//   }
+//   return <div>{props.number} is an {description} number</div>;
+// }
+
+// ReactDOM.render(
+//   <App />,
+//   document.getElementById('root')
+// )
+
+// function App() {
+//   const props = {firstName: 'Liu', lastName: 'Hongji'};
+//   return <Greeting {...props} />;
+// }
+
+// function Greeting(props) {
+//   return <div>{props.firstName} {props.lastName}</div>;
+// }
+
+// ReactDOM.render(
+//   <App />,
+//   document.getElementById('root')
+// )
+
+
+// Render Props
+// class MouseTracker extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.handleMouseMove = this.handleMouseMove.bind(this);
+//     this.state = {
+//       x: 0,
+//       y: 0
+//     };
+//   }
+
+//   handleMouseMove(event) {
+//     this.setState({
+//       x: event.clientX,
+//       y: event.clientY
+//     });
+//   }
+
+//   render() {
+//     return (
+//       <div style={{height: '100vh' }} onMouseMove=
+//       {this.handleMouseMove}>
+//         <h1>移动鼠标！</h1>
+//         <p>当前鼠标的位置是({this.state.x}, {this.state.y})</p>
+//       </div>
+//     );
+//   }
+// }
+
+// ReactDOM.render(
+//   <MouseTracker />,
+//   document.getElementById('root')
+// )
+
+class Cat extends React.Component {
+  render() {
+    const mouse = this.props.mouse;
+    return (
+      <img src="/cat.jpg" style={{ position: 'absolute', left: mouse.x, top: mouse.y }} />
+    );
+  }
 }
 
-class Chosen extends React.Component {
-  componentDidMount() {
-    this.$el = $(this.el);
-    this.$el.chosen();
-
-    this.handleChange = this.handleChange.bind(this);
-    this.$el.on('change', this.handleChange);
+class Mouse extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.state = { x: 0, y: 0 };
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.children !== this.props.children) {
-      this.$el.trigger("chosen:updated");
-    }
+  handleMouseMove(event) {
+    this.setState({
+      x: event.clientX,
+      y: event.clientY
+    });
   }
 
-  componentWillUnmount() {
-    this.$el.off('change', this.handleChange);
-    this.$el.chosen('destroy');
-  }
+  render() {
+    return (
+      <div style={{ height: '100vh' }} onMouseMove={this.handleMouseMove}>
 
-  handleChange(e) {
-    this.props.onChange(e.target.value);
+        {/*
+          Instead of providing a static representation of what <Mouse> renders,
+          use the `render` prop to dynamically determine what to render.
+        */}
+        {this.props.render(this.state)}
+      </div>
+    );
   }
+}
+
+class MouseTracker extends React.Component {
   render() {
     return (
       <div>
-        <select className="Chosen-select" ref={el => this.el = el}>
-          {this.props.children}
-        </select>
+        <h1>移动鼠标!</h1>
+        <Mouse render={mouse => (
+          <Cat mouse={mouse} />
+        )}/>
       </div>
     );
   }
 }
 
 ReactDOM.render(
-  <Example />,
+  <MouseTracker />,
   document.getElementById('root')
 )
